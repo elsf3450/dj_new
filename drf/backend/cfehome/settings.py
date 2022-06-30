@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+from itertools import product
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -124,5 +125,18 @@ STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+'''
+REST_FRAMEWORK = {
+	# python中认证的配置
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',   # 基本认证
+        'rest_framework.authentication.SessionAuthentication',  # session认证
+    )}
+'''
+    # python中权限的配置，如果没有指明，系统默认的权限是允许所有人访问的
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#'DEFAULT_PERMISSION_CLASSES': ( 'rest_framework.permissions.AllowAny',)
+REST_FRAMEWORK={
+    'DEFAULT_FILTER_BACKENDS':['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES':['rest_framework_simplejwt.authentication.JWTAuthentication',],
+}

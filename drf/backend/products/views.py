@@ -1,10 +1,16 @@
+from cgitb import lookup
 from django.shortcuts import render
 from rest_framework.response import Response
 # Create your views here.
-from rest_framework import generics ,mixins
+from rest_framework import generics ,mixins,permissions,status
 from rest_framework.viewsets import ModelViewSet
-from .models import Product
-from .serializers import ProductSerializer, ProductSerializer_detroy
+from .models import Product ,User ,UserToken
+from .serializers import ProductSerializer, ProductSerializer_detroy,UserSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+import uuid
+from .authentication import AuthLogin
+from .permissions import My_Permission
 '''
 class Bill(ModelViewSet):
     def create(self, request, *args, **kwargs):
@@ -17,6 +23,7 @@ class Bill(ModelViewSet):
 class ProductCreateAPIView_create(generics.ListCreateAPIView):
     queryset=Product.objects.all()
     serializer_class = ProductSerializer
+    
     def perform_create(self,serializer):
         print("serializer",serializer.validated_data)
         #title=serializer.validated_data.get("title")
@@ -24,7 +31,7 @@ class ProductCreateAPIView_create(generics.ListCreateAPIView):
         price=serializer.validated_data.get("price")
         #print("type",type(content))
         title=serializer.validated_data.get("title")
-        serializer.save(title='87',content='87',)
+        serializer.save(title='807',content='87',)
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset=Product.objects.all()
@@ -66,12 +73,86 @@ class ProductUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+class UserView(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    
+    def create(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user_type = request.data.get('user_type')
+        print("------------------------------------11")
+        print("username",username)
+        print("password",password)
+        user_obj = User.objects.filter(username=username, password=password).first()
+        print("user_obj",user_obj)
+        if user_obj:
+            token = uuid.uuid4() 
+            UserToken.objects.update_or_create(defaults={'token': token}, user_id=user_obj.id)
+            #token = token.hex()
+            return_msg={'msg':'登录成功', 'token':token}
+            return Response(return_msg)
+        else:
+            return_msg={'msg':'登录失敗', 'token':'token'}
+            return Response(return_msg)
 
-class ProuductMixinView(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
+class UserView_append(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    
+    def create(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user_type = request.data.get('user_type')
+        print("------------------------------------11")
+        print("username",username)
+        print("password",password)
+        user_obj = User.objects.filter(username=username, password=password).first()
+        print("user_obj",user_obj)
+        if user_obj:
+            token = uuid.uuid4() 
+            UserToken.objects.update_or_create(defaults={'token': token}, user_id=user_obj.id)
+            #token = token.hex()
+            return_msg={'msg':'登录成功', 'token':token}
+            return Response(return_msg)
+        else:
+            return_msg={'msg':'登录失敗', 'token':'token'}
+            return Response(return_msg)
+class UserView_append(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    def create(self, request, *args, **kwargs):
+        #username = request.data.get('username')
+        #password = request.data.get('password')
+        #user_type = request.data.get('user_type')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+class ProuductMixinView(mixins.RetrieveModelMixin,mixins.CreateModelMixin,mixins.ListModelMixin,generics.GenericAPIView):
     queryset=Product.objects.all()
     serializer_class = ProductSerializer
+    lookup_field='pk'
+    
+    authentication_classes=[AuthLogin,]
+    permission_classes=[My_Permission,]
+    #permission_classes=[permissions.IsAuthenticatedOrReadOnly]
+    #permission_classes = (IsAuthenticated,)
+    #permission_classes=[permissions.DjangoModelPermissions]
+    
     def get(self,request,*args,**kwargs):
-        return self.list(request,*args,**kwargs)
+        
+        pk = kwargs.get("pk")
+        print("request.user",request.user)
+        print("request11",request)
+        if pk is not None:
+            return self.retrieve(request,*args,**kwargs)
+        else:
+            return self.list(request,*args,**kwargs)
     def post(self,request,*args,**kwargs):
-        print("requestrequestrequest30",request)
-        return self.list(request,*args,**kwargs)
+        print("requestrequestrequest30",request.data)
+        #return self.list(request,*args,**kwargs)
+        request.data['price']=request.data['price']+1000
+        
+        return self.create(request, *args, **kwargs)
