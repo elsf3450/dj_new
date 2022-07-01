@@ -96,31 +96,11 @@ class UserView(ModelViewSet):
             return_msg={'msg':'登录失敗', 'token':'token'}
             return Response(return_msg)
 
+
 class UserView_append(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     
-    def create(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user_type = request.data.get('user_type')
-        print("------------------------------------11")
-        print("username",username)
-        print("password",password)
-        user_obj = User.objects.filter(username=username, password=password).first()
-        print("user_obj",user_obj)
-        if user_obj:
-            token = uuid.uuid4() 
-            UserToken.objects.update_or_create(defaults={'token': token}, user_id=user_obj.id)
-            #token = token.hex()
-            return_msg={'msg':'登录成功', 'token':token}
-            return Response(return_msg)
-        else:
-            return_msg={'msg':'登录失敗', 'token':'token'}
-            return Response(return_msg)
-class UserView_append(ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
     def create(self, request, *args, **kwargs):
         #username = request.data.get('username')
         #password = request.data.get('password')

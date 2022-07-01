@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from itertools import product
 from pathlib import Path
 
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -40,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'products',
-    'rest_framework'
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'jwtauth',
 ]
 
 MIDDLEWARE = [
@@ -136,7 +139,26 @@ REST_FRAMEWORK = {
     # python中权限的配置，如果没有指明，系统默认的权限是允许所有人访问的
 
 #'DEFAULT_PERMISSION_CLASSES': ( 'rest_framework.permissions.AllowAny',)
+'''
 REST_FRAMEWORK={
     'DEFAULT_FILTER_BACKENDS':['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_AUTHENTICATION_CLASSES':['rest_framework_simplejwt.authentication.JWTAuthentication',],
+}
+'''
+'''
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [ 
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser", 
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [                                # 新添加
+        "jwtauth.authentication.MyJWTAuthentication",  # 新添加 
+    ],
+}
+'''
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),  # 配置过期时间
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
 }
