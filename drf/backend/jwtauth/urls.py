@@ -1,9 +1,8 @@
 
 from django.contrib import admin
 from django.urls import path, include
-from .authentication import MyTokenObtainPairView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import  ProuductMixinView,RefreshView
+from .views import  ProuductMixinView,RefreshView,MyTokenObtainPairView
 
 urlpatterns = [
 

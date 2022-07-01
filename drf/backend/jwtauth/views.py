@@ -11,9 +11,12 @@ from rest_framework.viewsets import ModelViewSet
 from .authentication import MyJWTAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import  TokenRefreshView
-
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import MyTokenObtainPairSerializer
 import uuid
 
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class=MyTokenObtainPairSerializer
 
 class RefreshView(TokenRefreshView):
     #authentication_classes=[MyJWTAuthentication,]
@@ -30,7 +33,6 @@ class ProuductMixinView(mixins.RetrieveModelMixin,mixins.CreateModelMixin,mixins
     serializer_class = ProductSerializer
     lookup_field='pk'
     authentication_classes=[MyJWTAuthentication,]
-
     permission_classes= (AllowAny,)
     #permission_classes=[My_Permission,]
     #permission_classes=[permissions.IsAuthenticatedOrReadOnly]
