@@ -16,4 +16,5 @@ class MyJWTAuthentication(JWTAuthentication):
             user = User.objects.get(**{'id':user_id})
         except User.DoesNotExist:
             raise AuthenticationFailed(_('USER NOT FOUND'),code='user not found QQ')
+        print("useruseruseruseruser",user)
         return user
