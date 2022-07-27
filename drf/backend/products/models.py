@@ -12,7 +12,11 @@ class Product(models.Model):
         return "%2f" %(float(self.price)*0.8)
     def get_discount(self):
         return "2323"
-
+class Product02(models.Model):
+    #owner = models.ForeignKey(User)
+    title = models.CharField(max_length=120)
+    content=models.TextField(blank=True,null=True)
+    price = models.DecimalField(max_digits=15,decimal_places=2,default=99.99)
 class User(models.Model):
     username=models.CharField(max_length=32)
     password=models.CharField(max_length=32)

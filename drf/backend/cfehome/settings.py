@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'jwtauth',
+    'drf_yasg',
+    
 ]
 
 MIDDLEWARE = [
@@ -158,6 +160,7 @@ REST_FRAMEWORK = {
 }
 '''
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),  # 配置过期时间
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=100),  # 配置过期时间
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
 }
+

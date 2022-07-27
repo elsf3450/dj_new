@@ -9,7 +9,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = 'username'
     def validate(self,attrs):
         print("attrs",attrs)
-        authentication_kwargs={self.username_field:attrs[self.username_field],'password':attrs['password']}
+        authentication_kwargs={"username":attrs["username"],'password':attrs['password']}
         print(authentication_kwargs)
         
         try:
@@ -23,9 +23,17 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         print("data",data)
         return data
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer01(serializers.ModelSerializer):
     class Meta:
         model=models.Product
         fields= ["id","title","content", "price","sale_price", "get_discount"]
-
+    def to_representation(self, instance):
+        print("instance00",instance)
+        relative_path_dict = super(ProductSerializer01, self).to_representation(instance)
+        print("relative_path_dict0",relative_path_dict)
+        for k in relative_path_dict.keys():
+            if k == 'price':
+                relative_path_dict[k] = int(float(relative_path_dict[k])) * 10000
+        print("relative_path_dict1",relative_path_dict)
+        return relative_path_dict
 
